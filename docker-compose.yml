@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: postgres
+  show:
+    build: ./scrape
+    command: "pipenv run python supplydemand.py"
+    volumes:
+      - "./scrape/:/app"
+    depends_on:
+      - db
+  scrape:
+    build: ./scrape
+    volumes:
+      - "./scrape/:/app"
+    depends_on:
+      - db
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 3000:80
+    depends_on:
+      - db  
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=secret
