@@ -1,25 +1,35 @@
+from flask import Flask
 import psycopg2
 import json
 from scipy.stats import logistic
 
+app = Flask(__name__)
+
 connection_str = "dbname='postgres' user='postgres' password='postgres' host='db'"
+
+@app.route("/supply-demand")
+def index():
+  return json.dumps(calc_relative_ratios()[:100], indent=2)
 
 sigmoid = logistic.cdf
 
 def calc_relative_ratios():
-  conn = psycopg2.connect(connection_str)
-  cur = conn.cursor()
-  items = get_all_items(cur)
-  average = calc_overall_ratio(items)
-  res = []
-  for item in items:
-    if not item['members']:
-      x = calc_ratio(item)
-      res.append({'name': item['name'], 'v': sigmoid(x - average)})
-  conn.close()
-  res.sort(key=lambda x: x['v'], reverse=False)
-  return res
-  
+  try:
+    conn = psycopg2.connect(connection_str)
+    cur = conn.cursor()
+    items = get_all_items(cur)
+    average = calc_overall_ratio(items)
+    res = []
+    for item in items:
+      if not item['members']:
+        x = calc_ratio(item)
+        res.append({'name': item['name'], 'v': sigmoid(x - average)})
+    res.sort(key=lambda x: x['v'], reverse=False)
+    return res
+  except Exception as e:
+    print("Error: %s" % e)
+  finally:
+    conn.close()
 
 def calc_overall_ratio(items):
   ratios = [calc_ratio(i) for i in items]
@@ -48,6 +58,3 @@ def to_item(t):
     'buy_quantity': float(buy_quantity),
     'buy_average': float(buy_average)
   }
-
-if __name__ == "__main__":
-    print(json.dumps(calc_relative_ratios()[:100], indent=2))

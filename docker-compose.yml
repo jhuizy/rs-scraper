@@ -2,11 +2,12 @@ version: '3'
 services:
   db:
     image: postgres
-  show:
-    build: ./scrape
-    command: "pipenv run python supplydemand.py"
+  web:
+    build: ./web
     volumes:
-      - "./scrape/:/app"
+      - "./web/:/app"
+    ports:
+      - 8000:5000
     depends_on:
       - db
   scrape:

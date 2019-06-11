@@ -1,6 +1,8 @@
 import urllib.request, json
 import psycopg2
 from datetime import datetime
+import schedule
+import time
 
 connection_str = "dbname='postgres' user='postgres' password='postgres' host='db'"
 
@@ -45,8 +47,12 @@ def scrape():
     finally:
       conn.close()
     
-
-
-if __name__ == "__main__":
+def job():
   migrate()
   scrape()
+
+schedule.every(10).minutes.do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)

@@ -7,9 +7,9 @@ verify_ssl = true
 pylint = "*"
 
 [packages]
+flask = "*"
 psycopg2 = "*"
 scipy = "*"
-schedule = "*"
 
 [requires]
 python_version = "3.7"
