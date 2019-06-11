@@ -1,4 +1,5 @@
 import psycopg2
+import json
 from scipy.stats import logistic
 
 connection_str = "dbname='postgres' user='postgres' password='postgres' host='db'"
@@ -12,10 +13,11 @@ def calc_relative_ratios():
   average = calc_overall_ratio(items)
   res = []
   for item in items:
-    x = calc_ratio(item)
-    res.append({'name': item['name'], 'v': sigmoid(x - average)})
+    if not item['members']:
+      x = calc_ratio(item)
+      res.append({'name': item['name'], 'v': sigmoid(x - average)})
   conn.close()
-  res.sort(key=lambda x: x['v'], reverse=True)
+  res.sort(key=lambda x: x['v'], reverse=False)
   return res
   
 
@@ -48,4 +50,4 @@ def to_item(t):
   }
 
 if __name__ == "__main__":
-    print(calc_relative_ratios()[:100])
+    print(json.dumps(calc_relative_ratios()[:100], indent=2))
