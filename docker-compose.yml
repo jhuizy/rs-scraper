@@ -7,7 +7,7 @@ services:
     volumes:
       - "./web/:/app"
     ports:
-      - 8000:5000
+      - 3000:5000
     depends_on:
       - db
   scrape:
@@ -19,7 +19,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     ports:
-      - 3000:80
+      - 10022:80
     depends_on:
       - db  
     environment:
