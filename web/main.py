@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 import psycopg2
 import json
+from math import sqrt, pow
 from scipy.stats import logistic
 
 app = Flask(__name__)
@@ -11,7 +12,46 @@ connection_str = "dbname='postgres' user='postgres' password='postgres' host='db
 def index():
   return jsonify(calc_relative_ratios()[:100])
 
+@app.route("/unicorns")
+def unicorns():
+  return jsonify(calc_unicorns()[:100])
+
 sigmoid = logistic.cdf
+
+def pinched_sigmoid(y, mean, max):
+  pinched_max = 0.99 / sqrt(1 - pow(0.99, 2))
+  def pinch(y):
+    return y * (pinched_max / max)
+  x = pinch(y)
+  pinched_mean = pinch(mean)
+  return sigmoid(x - pinched_mean)
+
+def calc_unicorns():
+  try:
+    conn = psycopg2.connect(connection_str)
+    cur = conn.cursor()
+    items = get_all_items(cur)
+    unicorns = [to_unicorn_item(i) for i in items if is_potential_unicorn(i)]
+    avg_score = sum([u[1] for u in unicorns]) / len(unicorns)
+    max_score = max([u[1] for u in unicorns])
+    adjusted_unicorns = [adjust_unicorn(u, avg_score, max_score) for u in unicorns]
+    adjusted_unicorns.sort(key=lambda x: x[1], reverse=False)
+    return adjusted_unicorns
+  except Exception as e:
+    print("Error: %s" % e)
+  finally:
+    conn.close()
+
+def is_potential_unicorn(item):
+  return item['sell_quantity'] > item['buy_quantity'] and item['buy_average'] > item['sell_average']
+
+def to_unicorn_item(item):
+  avail_qty = item['sell_quantity'] - item['buy_quantity']
+  return (avail_qty, (item['buy_average'] * avail_qty) - (item['sell_average'] * avail_qty), item)
+
+def adjust_unicorn(unicorn, avg_score, max_score):
+  a, b, item = unicorn
+  return (a, pinched_sigmoid(b, avg_score, max_score), item)
 
 def calc_relative_ratios():
   try:
