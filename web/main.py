@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 import psycopg2
 import json
 from scipy.stats import logistic
@@ -9,7 +9,7 @@ connection_str = "dbname='postgres' user='postgres' password='postgres' host='db
 
 @app.route("/supply-demand")
 def index():
-  return json.dumps(calc_relative_ratios()[:100], indent=2)
+  return jsonify(json.dumps(calc_relative_ratios()[:100], indent=2))
 
 sigmoid = logistic.cdf
 
