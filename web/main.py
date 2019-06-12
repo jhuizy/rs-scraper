@@ -35,7 +35,7 @@ def calc_unicorns():
     avg_score = sum([u[1] for u in unicorns]) / len(unicorns)
     max_score = max([u[1] for u in unicorns])
     adjusted_unicorns = [adjust_unicorn(u, avg_score, max_score) for u in unicorns]
-    adjusted_unicorns.sort(key=lambda x: x[1], reverse=False)
+    adjusted_unicorns.sort(key=lambda x: x[1], reverse=True)
     return adjusted_unicorns
   except Exception as e:
     print("Error: %s" % e)
