@@ -2,6 +2,7 @@ version: '3'
 services:
   db:
     image: postgres
+    volume: pgdata:/var/lib/postgresql/data
   web:
     build: ./web
     volumes:
@@ -25,3 +26,5 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.com
       - PGADMIN_DEFAULT_PASSWORD=secret
+volumes:
+  pgdata:
