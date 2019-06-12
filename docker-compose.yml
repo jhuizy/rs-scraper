@@ -2,7 +2,8 @@ version: '3'
 services:
   db:
     image: postgres
-    volume: pgdata:/var/lib/postgresql/data
+    volumes: 
+      - pgdata:/var/lib/postgresql/data
   web:
     build: ./web
     volumes:
