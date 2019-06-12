@@ -9,7 +9,7 @@ connection_str = "dbname='postgres' user='postgres' password='postgres' host='db
 
 @app.route("/supply-demand")
 def index():
-  return jsonify(json.dumps(calc_relative_ratios()[:100], indent=2))
+  return jsonify(calc_relative_ratios()[:100])
 
 sigmoid = logistic.cdf
 
