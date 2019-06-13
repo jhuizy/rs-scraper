@@ -14,7 +14,7 @@ def supply_demand():
 def unicorns():
   return jsonify(calc_unicorns()[:100])
 
-endpoint = "http://get-tracker.jhuizy.com:3000"
+endpoint = "http://ge-tracker.jhuizy.com:3000"
 
 sigmoid = logistic.cdf
 
@@ -68,9 +68,21 @@ def calc_ratio(item):
   return (sell / overall) - (buy / overall)
 
 def get_all_items():
-  with urllib.request.urlopen(endpoint + "/items") as url:
-    return json.loads(url.read().decode())
+  return fetch_all(endpoint + "/items")
 
 def get_item_history(name):
-  with urllib.request.urlopen(endpoint + "/items/" + name + "/history") as url:
-    return json.loads(url.read().decode())
+  return fetch_all(endpoint + "/items/" + name + "/history")
+
+def fetch_all(url):
+  def fetch_one(page, per_page):
+    with urllib.request.urlopen(url + "?page={page}&per_page={per_page}".format(page=page, per_page=per_page)) as url:
+      return json.loads(url.read().decode())
+  per_page = 50
+  page = 0
+  data = []
+  result = fetch_one(page, per_page)
+  while len(result) > 0:
+    page += 1
+    data += result
+    result = fetch_one(page, per_page)
+  return result
