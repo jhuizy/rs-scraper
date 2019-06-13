@@ -31,8 +31,8 @@ def calc_unicorns():
   unicorns = [to_unicorn_item(i) for i in items if is_potential_unicorn(i)]
   avg_score = sum([u[1] for u in unicorns]) / len(unicorns)
   max_score = max([u[1] for u in unicorns])
-  adjusted_unicorns = [adjust_unicorn(u, avg_score, max_score) for u in unicorns]
-  adjusted_unicorns.sort(key=lambda x: x[1], reverse=True)
+  adjusted_unicorns = [format_unicorn(adjust_unicorn(u, avg_score, max_score)) for u in unicorns]
+  adjusted_unicorns.sort(key=lambda x: x['score'], reverse=True)
   return adjusted_unicorns
 
 def is_potential_unicorn(item):
@@ -45,6 +45,21 @@ def to_unicorn_item(item):
 def adjust_unicorn(unicorn, avg_score, max_score):
   a, b, item = unicorn
   return (a, pinched_sigmoid(b, avg_score, max_score), item)
+
+def format_unicorn(unicorn):
+  avail_qty, score, item = unicorn
+  margin_gp = item['buy_average'] - item['sell_average']
+  margin_perc = margin_gp / item['sell_average'] * 100
+  return {
+    'qty': avail_qty,
+    'score': score,
+    'name': item['name'],
+    'memebers': item['members'],
+    'margin_percent': margin_perc,
+    'margin_gp': margin_gp,
+    'buy': item['sell_average'],
+    'sell': item['buy_average']
+  }
 
 def calc_relative_ratios():
   items = get_all_items()
