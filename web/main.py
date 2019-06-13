@@ -25,7 +25,7 @@ def index():
 @app.route("/items/<name>/history")
 def get_history(name):
   try:
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get('page', 0, type=int)
     per_page = request.args.get('per_page', 20, type=int)
     con = psycopg2.connect(connection_str)
     cur = con.cursor()

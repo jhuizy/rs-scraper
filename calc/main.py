@@ -73,11 +73,11 @@ def get_all_items():
 def get_item_history(name):
   return fetch_all(endpoint + "/items/" + name + "/history")
 
-def fetch_all(url):
+def fetch_all(endpoint):
   def fetch_one(page, per_page):
-    with urllib.request.urlopen(url + "?page={page}&per_page={per_page}".format(page=page, per_page=per_page)) as url:
+    with urllib.request.urlopen(endpoint + "?page={page}&per_page={per_page}".format(page=page, per_page=per_page)) as url:
       return json.loads(url.read().decode())
-  per_page = 50
+  per_page = 5000
   page = 0
   data = []
   result = fetch_one(page, per_page)
@@ -85,4 +85,4 @@ def fetch_all(url):
     page += 1
     data += result
     result = fetch_one(page, per_page)
-  return result
+  return data
