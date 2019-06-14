@@ -3,7 +3,6 @@ from flask_cors import CORS
 import psycopg2
 import json
 from math import sqrt, pow
-from scipy.stats import logistic
 
 app = Flask(__name__)
 CORS(app)
