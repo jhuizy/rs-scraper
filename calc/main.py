@@ -1,10 +1,12 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import urllib.request
 import json
 from math import sqrt, pow
 from scipy.stats import logistic
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/supply-demand")
 def supply_demand():
