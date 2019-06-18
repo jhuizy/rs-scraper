@@ -8,6 +8,27 @@ const loadItems = (onLoaded) => {
     .catch(console.err);
 }
 
+const formatMoney = (gp) => {
+  const rounded = () => {
+    const M_10 = 10000000
+    const K_10 = 10000
+    if (gp > M_10) {
+      return `${(gp / M_10).toFixed(2)}M`    
+    } else if (gp > K_10) {
+      return `${(gp / K_10).toFixed(2)}K`
+    } else {
+      return gp
+    }
+  }
+  
+  return `${gp} (${rounded(gp)})`
+  
+}
+
+const formatPercent = (perc) => {
+  return perc.toFixed(2)
+}
+
 export default () => {
 
   const [items, setItems] = React.useState(null)
@@ -21,10 +42,10 @@ export default () => {
   const renderRow = (item) => (
         <Table.Row>
           <Table.Cell>{item['name']}</Table.Cell>
-          <Table.Cell>{item['buy']}</Table.Cell>
-          <Table.Cell>{item['sell']}</Table.Cell>
-          <Table.Cell>{item['margin_percent']}</Table.Cell>
-          <Table.Cell>{item['margin_gp']}</Table.Cell>
+          <Table.Cell>{formatMoney(item['buy'])}</Table.Cell>
+          <Table.Cell>{formatMoney(item['sell'])}</Table.Cell>
+          <Table.Cell>{formatPercent(item['margin_percent'])}</Table.Cell>
+          <Table.Cell>{formatMoney(item['margin_gp'])}</Table.Cell>
           <Table.Cell>{item['score']}</Table.Cell>
         </Table.Row>
   )

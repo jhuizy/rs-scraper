@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 
-import { Button, Form, Input, Label } from 'semantic-ui-react'
+import { Container, Form, Icon, Input, Label } from 'semantic-ui-react'
 
 const loadSuggestions = (onLoaded) => {
   fetch("http://ge-tracker.jhuizy.com:3000/items/names")
@@ -10,11 +10,13 @@ const loadSuggestions = (onLoaded) => {
     .catch(console.err);
 }
 
-const loadItemHistory = (item, onLoaded) => {
+const loadItemHistory = (setLoading, item, onLoaded) => {
+  setLoading(true);
   fetch(`http://ge-tracker.jhuizy.com:3000/items/${item}/history?page=0&per_page=200`)
     .then(res => res.json())
     .then(onLoaded)
-    .catch(console.err);
+    .catch(console.err)
+    .finally(() => setLoading(false));
 }
 
 const renderData = (data) => {
@@ -54,6 +56,7 @@ export default (props) => {
   const [suggestions, setSuggestions] = useState(null)
   const [item, setItem] = useState("Magic logs")
   const [data, setData] = useState(null)
+  const [isLoading, setLoading] = useState(false)
 
   useEffect(() => {
     if (suggestions == null) {
@@ -63,23 +66,31 @@ export default (props) => {
 
   useEffect(() => {
     if (data == null && item != null) {
-      loadItemHistory(item, setData)
+      console.log('')
+      loadItemHistory(setLoading, item, setData)
     }
 
   }, [data, item])
 
   return (
     <div>
-      <Form>
-        <Form.Field>
-          <Label>Item Name</Label>
-          <Input placeholder='eg. Magic logs' onChange={(e) => setItem(e.target.value)} value={item} />
-          <datalist id='items'>
-            {suggestions && suggestions.map(renderSuggestion)}
-          </datalist>
-        </Form.Field>
-        <Button type='submit' onClick={(e) => loadItemHistory(item, setData)} >Submit</Button>
-      </Form>
+      <Container text style={{ margin: "20px" }}>
+        <Form loading={isLoading}>
+          <Form.Field>
+            <label for="item-search">Item Name</label>
+            <Input
+              id="item-search"
+              placeholder='eg. Magic logs'
+              icon={<Icon name='search' inverted circular link />}
+              onClick={(e) => loadItemHistory(setLoading, item, setData)}
+              onChange={(e) => setItem(e.target.value)} value={item}
+            />
+            <datalist id='items'>
+              {suggestions && suggestions.map(renderSuggestion)}
+            </datalist>
+          </Form.Field>
+        </Form>
+      </Container>
       {data && renderData(data)}
     </div>
   );
